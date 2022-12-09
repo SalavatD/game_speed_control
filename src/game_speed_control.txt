@@ -1,0 +1,54 @@
+{$CLEO}
+0000:
+const
+    NORMAL_MESSAGE_TIMEOUT = 250
+    NORMAL_WAIT_TIME = 100
+    NORMAL_GAME_SPEED = 1.0
+    MAX_GAME_SPEED = 2.0
+    MIN_GAME_SPEED = 0.1
+    DELTA = 0.1
+    STYLE_NUMBER = 6
+    KEY_0_CODE = 48
+    KEY_MINUS_CODE = 189
+    KEY_PLUS_CODE = 187
+end
+float message_timeout = NORMAL_MESSAGE_TIMEOUT
+float wait_time = NORMAL_WAIT_TIME
+float game_speed = NORMAL_GAME_SPEED
+:MAIN
+wait 0
+if or
+0AB0: key_pressed KEY_0_CODE
+0AB0: key_pressed KEY_MINUS_CODE
+0AB0: key_pressed KEY_PLUS_CODE
+then
+    if
+    0AB0: key_pressed KEY_0_CODE
+    then
+        game_speed = NORMAL_GAME_SPEED
+    end
+    if and
+    0AB0: key_pressed KEY_MINUS_CODE
+    game_speed > MIN_GAME_SPEED
+    then
+        game_speed -= DELTA
+    end
+    if and
+    0AB0: key_pressed KEY_PLUS_CODE
+    game_speed < MAX_GAME_SPEED
+    then
+        game_speed += DELTA
+    end
+    message_timeout = NORMAL_MESSAGE_TIMEOUT
+    message_timeout *= game_speed
+    wait_time = NORMAL_WAIT_TIME
+    wait_time *= game_speed
+    00BE: text_clear_all
+    0ACF: show_formatted_styled_text "x%.1f" time message_timeout style STYLE_NUMBER game_speed
+    015D: set_gamespeed game_speed
+    wait  wait_time
+else
+    015D: set_gamespeed game_speed
+end
+jump @MAIN
+0A93: end_custom_thread
